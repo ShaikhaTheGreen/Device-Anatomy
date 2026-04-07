@@ -1491,6 +1491,90 @@ function buildLevel1(){
   pmicM.position.set(0, baseYs[2]+0.06, pcbD*0.15);
   logicGrp.add(pmicM);
 
+  // ── Board wiring & connector details ──
+  const traceY = baseYs[2]+0.022;
+  const copperMat = M('copwire',{color:0xc97a36,metalness:0.85,roughness:0.25,emissive:0x2a1408,emissiveIntensity:0.25});
+  const goldMat = M('goldwire',{color:0xd4a84a,metalness:0.9,roughness:0.18,emissive:0x261a05,emissiveIntensity:0.2});
+  const greenMat = M('membus',{color:0x35c97a,metalness:0.6,roughness:0.35,emissive:0x0c4022,emissiveIntensity:0.35});
+  const blueMat = M('pcietr',{color:0x37a9ff,metalness:0.6,roughness:0.35,emissive:0x0a2a55,emissiveIntensity:0.35});
+  const purpleMat = M('edpwire',{color:0xa566ff,metalness:0.55,roughness:0.4,emissive:0x2c1455,emissiveIntensity:0.35});
+  const orangeMat = M('pwrrail',{color:0xff8a32,metalness:0.6,roughness:0.4,emissive:0x55220a,emissiveIntensity:0.4});
+
+  // Memory bus traces (CPU ↔ RAM, dense parallel pattern)
+  const ramSide = (ramMod==='On-package'||ramMod.includes('Soldered')) ? -pcbW*0.32 : -pcbW*0.3;
+  for(let i=0;i<10;i++){
+    const t = box(Math.abs(cpuPosX-ramSide), 0.006, 0.014, greenMat, 'membus');
+    t.position.set((cpuPosX+ramSide)/2, traceY, cpuPosZ - 0.16 + i*0.04);
+    logicGrp.add(t);
+  }
+  // PCIe lanes (CPU ↔ SSD)
+  for(let i=0;i<4;i++){
+    const t = box(Math.abs(pcbW*0.2 - cpuPosX), 0.006, 0.014, blueMat, 'pcietrace');
+    t.position.set((cpuPosX+pcbW*0.2)/2, traceY, cpuPosZ + 0.18 + i*0.045);
+    logicGrp.add(t);
+  }
+  // Power rails (PMIC → CPU)
+  for(let i=0;i<3;i++){
+    const t = box(Math.abs(0 - cpuPosX) + 0.05, 0.006, 0.05, orangeMat, 'powerrail');
+    t.position.set(cpuPosX/2, traceY, cpuPosZ*0.4 + i*0.09);
+    logicGrp.add(t);
+  }
+  // eDP traces (CPU → display connector)
+  for(let i=0;i<4;i++){
+    const t = box(0.018, 0.006, Math.abs(pcbD*0.4 - cpuPosZ), purpleMat, 'edp');
+    t.position.set(cpuPosX*0.3 + i*0.04, traceY, (cpuPosZ + pcbD*0.4)/2);
+    logicGrp.add(t);
+  }
+
+  // Display connector (eDP plug) — front edge of board
+  const dispConn = box(0.55, 0.05, 0.08, M('dconn',{color:0x222226,metalness:0.5,roughness:0.4}),'dispconn');
+  dispConn.position.set(cpuPosX*0.3+0.06, baseYs[2]+0.05, pcbD*0.45);
+  logicGrp.add(dispConn);
+  // Gold pins on the display connector
+  for(let i=0;i<14;i++){
+    const pin = box(0.012, 0.008, 0.06, goldMat);
+    pin.position.set(cpuPosX*0.3 - 0.18 + i*0.028, baseYs[2]+0.075, pcbD*0.45);
+    logicGrp.add(pin);
+  }
+
+  // Battery connector (rear edge near PMIC)
+  const battConn = box(0.4, 0.05, 0.1, M('bconn',{color:0x1a1a22,metalness:0.5,roughness:0.4}),'battconn');
+  battConn.position.set(0.35, baseYs[2]+0.05, pcbD*0.4);
+  logicGrp.add(battConn);
+  for(let i=0;i<6;i++){
+    const pin = box(0.018, 0.008, 0.07, goldMat);
+    pin.position.set(0.18 + i*0.06, baseYs[2]+0.075, pcbD*0.4);
+    logicGrp.add(pin);
+  }
+  // Thick battery power wire from connector to PMIC
+  const battWire = box(0.06, 0.012, Math.abs(pcbD*0.4 - pcbD*0.15), copperMat, 'powerrail');
+  battWire.position.set(0.18, baseYs[2]+0.04, pcbD*0.275);
+  logicGrp.add(battWire);
+
+  // Keyboard FFC (flex flat cable) header
+  const kbConn = box(0.7, 0.04, 0.05, M('kbconn',{color:0xeacf6a,metalness:0.4,roughness:0.5,emissive:0x4a3a18,emissiveIntensity:0.3}),'keyboard');
+  kbConn.position.set(-pcbW*0.05, baseYs[2]+0.045, pcbD*0.45);
+  logicGrp.add(kbConn);
+
+  // USB-C port edge connectors (left side of board)
+  for(let i=0;i<2;i++){
+    const port = box(0.18, 0.07, 0.32, M('uscport'+i,{color:0x222226,metalness:0.6,roughness:0.35}),'usbc');
+    port.position.set(pcbW*0.5 + 0.08, baseYs[2]+0.06, -pcbD*0.18 + i*0.45);
+    logicGrp.add(port);
+    // Inner gold contacts
+    const inner = box(0.14, 0.025, 0.22, goldMat);
+    inner.position.set(pcbW*0.5 + 0.08, baseYs[2]+0.065, -pcbD*0.18 + i*0.45);
+    logicGrp.add(inner);
+  }
+
+  // Antenna trace from NIC to corner (Wi-Fi/BT)
+  const ant = box(Math.abs(pcbW*0.45 - pcbW*0.25), 0.005, 0.012, copperMat,'nic');
+  ant.position.set(-pcbW*0.35, traceY, -pcbD*0.42);
+  logicGrp.add(ant);
+  const antPad = box(0.12, 0.01, 0.12, M('antpad',{color:0xd4a84a,metalness:0.85,roughness:0.2}),'nic');
+  antPad.position.set(-pcbW*0.45, traceY+0.005, -pcbD*0.42);
+  logicGrp.add(antPad);
+
   layerGroups.push(logicGrp); L1.add(logicGrp);
 
   // — Layer 3: Processors (CPU/GPU/NPU) —

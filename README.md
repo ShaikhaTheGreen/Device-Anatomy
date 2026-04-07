@@ -1,5 +1,7 @@
 # Device Anatomy
 
+**🔗 Live demo:** https://shaikhathegreen.github.io/Device-Anatomy/
+
 An interactive 3D explorer for the inner workings of modern computing devices — laptops, desktops, tablets, and phones — built as a single-file web app using [Three.js](https://threejs.org/).
 
 Designed and used in **ISC230 — IT Infrastructure** at the College of Life Sciences, Department of Information Sciences, Kuwait University.
