@@ -408,20 +408,20 @@ const DEVICE_DB = {
     battery:{wh:52.6,cells:4,v:11.04},
     display:{size:13.6,res:'2560x1664',hz:60,tech:'Liquid Retina IPS',hdr:false},
     thermal:{fans:0,pipes:1,type:'Passive'},
-    ports:[{t:'USB-C/TB3',n:2,side:'left'},{t:'MagSafe 3',n:1,side:'left'},{t:'3.5mm',n:1,side:'right'}],
+    ports:[{t:'USB-C/TB4',n:2,side:'left'},{t:'MagSafe 3',n:1,side:'left'},{t:'3.5mm',n:1,side:'right'}],
     gpuLabel:'M2 GPU (8-core)',dim:{w:304,d:215,h:11.3,kg:1.24},
     colors:{chassis:0x7d7e80,chassisDk:0x5c5c5f,key:0x2a2a2a,tpad:0x8a8a8e,bezel:0x111111,screen:0x0a0f1e}
   },
   'macbook-pro-m3pro': {
     name:'MacBook Pro 14″ M3 Pro', brand:'Apple', cat:'Pro Laptop',
-    cpu:{model:'Apple M3 Pro',arch:'ARM',pCores:6,eCores:6,gpu:14,neural:16,l2:'24 MB',l3:'N/A',tdp:30,process:'3nm',base:2.7,boost:4.06},
+    cpu:{model:'Apple M3 Pro',arch:'ARM',pCores:6,eCores:6,gpu:18,neural:16,l2:'24 MB',l3:'N/A',tdp:30,process:'3nm',base:2.7,boost:4.06},
     ram:{type:'LPDDR5',sizeGB:18,speed:6400,channels:'Unified',modules:'On-package'},
     ssd:{type:'NVMe',sizeGB:512,iface:'PCIe 4.0',nand:4,read:5200,write:4100},
     battery:{wh:72.4,cells:6,v:11.47},
     display:{size:14.2,res:'3024x1964',hz:120,tech:'Liquid Retina XDR',hdr:true},
     thermal:{fans:2,pipes:2,type:'Active'},
     ports:[{t:'MagSafe 3',n:1,side:'left'},{t:'USB-C/TB4',n:2,side:'left'},{t:'3.5mm',n:1,side:'left'},{t:'HDMI',n:1,side:'right'},{t:'SD Card',n:1,side:'right'},{t:'USB-C/TB4',n:1,side:'right'}],
-    gpuLabel:'M3 Pro GPU (14-core)',dim:{w:312,d:221,h:15.5,kg:1.61},
+    gpuLabel:'M3 Pro GPU (18-core)',dim:{w:312,d:221,h:15.5,kg:1.61},
     colors:{chassis:0x6e6e73,chassisDk:0x4e4e52,key:0x1e1e1e,tpad:0x7a7a7e,bezel:0x0a0a0a,screen:0x080d1a}
   },
   'dell-xps-13': {
@@ -536,7 +536,7 @@ const DEVICE_DB = {
   'xotic-gx13': {
     name:'XOTIC PC GX13 (Gaming Desktop)', brand:'XOTIC PC', cat:'Gaming Desktop',
     formFactor:'desktop',
-    cpu:{model:'Intel Core Ultra 9 285K',arch:'x86-64 Hybrid',pCores:8,eCores:16,gpu:0,neural:0,l2:'36 MB',l3:'36 MB',tdp:125,process:'Intel 7',base:3.7,boost:5.7},
+    cpu:{model:'Intel Core Ultra 9 285K',arch:'x86-64 Hybrid',pCores:8,eCores:16,gpu:0,neural:0,l2:'36 MB',l3:'36 MB',tdp:125,process:'TSMC N3B',base:3.7,boost:5.7},
     ram:{type:'DDR5',sizeGB:64,speed:6000,channels:'Dual',modules:'DIMM (4 slots)'},
     ssd:{type:'NVMe',sizeGB:2048,iface:'PCIe 4.0 x4',nand:8,read:7000,write:5500},
     battery:{wh:0,cells:0,v:0},
@@ -563,7 +563,7 @@ const DEVICE_DB = {
     battery:{wh:13.27,cells:1,v:3.83},
     display:{size:6.1,res:'2556x1179',hz:120,tech:'Super Retina XDR OLED',hdr:true},
     thermal:{fans:0,pipes:1,type:'Passive (Graphite + Ti frame)'},
-    ports:[{t:'USB-C/TB4',n:1,side:'bottom'}],
+    ports:[{t:'USB-C 3.2',n:1,side:'bottom'}],
     gpuLabel:'Apple GPU (6-core)',
     dim:{w:71, d:147, h:8.25, kg:0.187},
     colors:{chassis:0x4a4a52,chassisDk:0x2a2a30,key:0x222,tpad:0x555,bezel:0x0a0a0a,screen:0x050810}
@@ -589,7 +589,7 @@ const COMP_INFO = {
   battery:{name:'Li-Ion Battery Pack',desc:'Lithium-ion cells providing portable power. Managed by the PMIC for safe charging/discharging.',unit:'Unit 2 — Power & Energy',chapter:'Supplementary: Power management',week:'Week 3 · Feb 9',clo:'CLO3: Explain power delivery and thermal considerations',lab:'Lab 2: Battery health monitoring',analogy:'Like a water tank — stores energy, drains as you work, must be refilled.'},
   thermal:{name:'Thermal Module',desc:'Cooling system: fans + copper heat pipes + aluminum fins. Transfers heat from CPU to outside air.',unit:'Unit 2 — Thermal Management',chapter:'Supplementary: Cooling tech',week:'Week 3 · Feb 9',clo:'CLO3: Describe thermal solutions and performance impact',lab:'Lab 2: Thermal throttling under load',analogy:'Like air conditioning — without it, everything overheats and slows down.'},
   display:{name:'Display Panel',desc:'Screen driven by GPU frame buffer. Refreshed at the panel\'s refresh rate.',unit:'Unit 7 — Output Devices',chapter:'Tanenbaum Ch. 2.4',week:'Week 9 · Mar 30',clo:'CLO2: Explain I/O subsystems and display technology',lab:'Lab 7: Display calibration & resolution',analogy:'A window into the computer\'s world.'},
-  nic:{name:'Wi-Fi / Bluetooth NIC',desc:'Network interface controller for wireless communication. Handles 802.11ax and Bluetooth protocols.',unit:'Unit 8 — Networking',chapter:'Tanenbaum Ch. 1.3',week:'Week 10 · Apr 6',clo:'CLO4: Describe network interfaces and wireless communication',lab:'Lab 8: Wi-Fi analysis & packet inspection',analogy:'Like a radio transceiver — sends/receives data wirelessly.'},
+  nic:{name:'Network Interface Controller (NIC)',desc:'Tanenbaum Ch. 2.4 (I/O): the hardware that connects the computer to a network. On laptops/phones this is typically a combined Wi-Fi (802.11ax) + Bluetooth chip; on desktops it is usually a wired Gigabit or 2.5 GbE Ethernet controller on the motherboard. Either way the NIC moves frames between the CPU (via PCIe / on-chip interconnect) and the physical network medium.',unit:'Unit 8 — Networking',chapter:'Tanenbaum Ch. 2.4',week:'Week 10 · Apr 6',clo:'CLO4: Describe network interfaces and wired/wireless communication',lab:'Lab 8: Network interface inspection',analogy:'Like a post office — packages (packets) are handed to it, and it figures out how to send them over the right route, wired or wireless.'},
   pmic:{name:'PMIC (Power Management IC)',desc:'⚠ Not in Tanenbaum 6e (supplementary). Regulates power distribution from the battery at correct voltages, and manages charging and sleep states. Tanenbaum covers computer organization but not the PMIC as a named component.',unit:'Unit 2 — Power Distribution',chapter:'Supplementary: Voltage regulation',week:'Week 3 · Feb 9',clo:'CLO3: Trace power delivery from source to component',lab:'Lab 2: Power states and consumption',analogy:'Like an electrical breaker panel — distributes the right power to each room.'},
   usbc:{name:'USB-C / Thunderbolt Controller',desc:'Manages external connectivity. Supports data (40 Gbps), display output, and power delivery.',unit:'Unit 6 — I/O & Bus Architecture',chapter:'Tanenbaum Ch. 2.4',week:'Week 7 · Mar 9',clo:'CLO2: Explain bus architectures and I/O standards',lab:'Lab 6: USB enumeration & bandwidth',analogy:'Like a universal dock — any device can connect, transfer data, or charge.'},
   keyboard:{name:'Keyboard & Trackpad',desc:'Input devices converting physical actions into digital signals via internal bus.',unit:'Unit 6 — Input Devices',chapter:'Tanenbaum Ch. 2.4',week:'Week 7 · Mar 9',clo:'CLO2: Describe input device interfaces',lab:'Lab 6: Input device event monitoring',analogy:'Like a telegraph key — each press sends a coded signal.'},
@@ -2425,7 +2425,7 @@ function buildLevel5(){
 // Each form factor has a different layer ordering — using a single laptop-shaped
 // map mistags every untagged sub-mesh on phones/tablets/desktops.
 const LAYER_DEFAULT_CID_BY_FORM = {
-  laptop:  ['bottom','battery','board','cpu','thermal','keyboard','display',null,'ram'],
+  laptop:  ['bottom','battery','board','cpu','thermal','keyboard','display','ram'],
   tablet:  ['bottom','battery','board','thermal','keyboard','display',null,'ram'],
   phone:   ['bottom','battery','board','thermal',null,    'display',null,'ram'],
   desktop: ['bottom','battery','board','thermal','gpu',   null,     null,'ram']
@@ -2472,7 +2472,7 @@ function showBuildErrorToast(){
   let el=document.getElementById('build-err-toast');
   if(!el){el=document.createElement('div');el.id='build-err-toast';el.style.cssText='position:absolute;top:60px;left:50%;transform:translateX(-50%);background:#552222;color:#fee;border:1px solid #aa4444;padding:10px 14px;border-radius:6px;z-index:50;font-size:12px;cursor:pointer';wrap.appendChild(el);}
   el.innerHTML='⚠ Rendering error in '+_buildError+'<br><span style="opacity:.7">Click to reset to default device</span>';
-  el.onclick=()=>{_buildError=null;el.remove();S.device='macbook-pro-14';if(typeof applyDevice==='function')applyDevice();else location.reload();};
+  el.onclick=()=>{_buildError=null;el.remove();S.device='macbook-pro-m3pro';if(typeof applyDevice==='function')applyDevice();else location.reload();};
 }
 safeBuild('L1',buildLevel1); safeBuild('L2',buildLevel2); safeBuild('L3',buildLevel3); safeBuild('L4',buildLevel4); safeBuild('L5',buildLevel5);
 defaultTagLevel1();
@@ -4061,8 +4061,8 @@ function showInfo(compId){
   if(typeof markExplored==='function') markExplored(compId);
 }
 
-function closeInfoPanel(){document.getElementById('info-panel').classList.remove('open');S.infoPanelOpen=false;S.selected=null;if(typeof clearFocus==='function')clearFocus();}
-document.getElementById('close-info').onclick=closeInfoPanel;
+function closeInfoPanel(){const p=document.getElementById('info-panel');if(p)p.classList.remove('open');S.infoPanelOpen=false;S.selected=null;if(typeof clearFocus==='function')clearFocus();}
+{const ci=document.getElementById('close-info');if(ci)ci.onclick=closeInfoPanel;}
 
 // ================================================================
 //  SECTION 13 — UI CONTROLLERS
