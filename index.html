@@ -67,9 +67,10 @@ body{background:var(--bg);color:var(--text-primary);font-family:-apple-system,sy
 #quiz-card .qclose{background:none;color:var(--text-secondary);margin-left:8px}
 @media (max-width:768px){#topbar{padding:0 14px}#topbar .tb-title{font-size:15px}#topbar .tb-sub{display:none}}
 #sidebar{width:240px;min-width:200px;max-width:560px;background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-right:var(--border);padding:18px 14px 14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;z-index:30;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent;transition:transform .3s cubic-bezier(0.4,0,0.2,1);color:var(--text-primary);position:relative;flex-shrink:0}
-#sidebar-resizer{position:fixed;top:0;left:237px;width:6px;height:100vh;cursor:col-resize;z-index:40;background:transparent;transition:background .15s}
+#sidebar-resizer{position:fixed;top:78px;left:236px;width:8px;height:calc(100vh - 78px);cursor:col-resize;z-index:105;background:linear-gradient(to right,transparent 0%,transparent 35%,rgba(0,0,0,0.12) 50%,transparent 65%,transparent 100%);transition:background .15s}
 @media (max-width:780px){#sidebar-resizer{display:none}}
-#sidebar-resizer:hover,#sidebar-resizer.dragging{background:rgba(239,159,39,0.35)}
+#sidebar-resizer:hover,#sidebar-resizer.dragging{background:linear-gradient(to right,transparent 0%,transparent 20%,rgba(239,159,39,0.6) 50%,transparent 80%,transparent 100%)}
+#sidebar-resizer:focus-visible{outline:2px solid var(--apple-blue);outline-offset:-2px}
 body.sidebar-resizing{cursor:col-resize!important;user-select:none}
 body.sidebar-resizing #sidebar{transition:none}
 #sidebar-toggle{display:none;position:absolute;top:10px;left:10px;z-index:35;background:rgba(20,16,12,.92);border:1px solid rgba(239,159,39,.45);color:#EF9F27;font-size:18px;padding:6px 10px;border-radius:6px;cursor:pointer;backdrop-filter:blur(6px)}
@@ -4132,7 +4133,7 @@ buildCustomUI();
     w=Math.max(MIN,Math.min(MAX,w|0));
     sidebar.style.width=w+'px';
     sidebar.style.minWidth=w+'px';
-    resizer.style.left=(w-3)+'px';
+    resizer.style.left=(w-4)+'px';
     // Tell the three.js viewport to re-measure
     window.dispatchEvent(new Event('resize'));
     return w;
