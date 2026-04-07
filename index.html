@@ -963,8 +963,8 @@ function buildLevel1(){
     const backShell = new Group(); backShell.userData.layerIndex=0;
     backShell.add(box(W,tH,D,DM.chassis));
     backShell.children[0].position.y = tBaseYs[0];
-    // Kickstand — full-width plate hinged at the bottom-rear edge of the tablet,
-    // pivoting outward/downward like the real Surface Pro friction hinge.
+    // Kickstand + Microsoft logo — only for Surface-style tablets, not phones
+    if(dev.formFactor==='tablet'){
     const ksPivot = new Group();
     // Pivot at bottom-rear edge of back shell (z=+D/2, just below back face)
     ksPivot.position.set(0, tBaseYs[0]-tH/2, D/2 - 0.02);
@@ -995,6 +995,7 @@ function buildLevel1(){
       new MeshStandardMaterial({color:0x3a3d44,metalness:0.7,roughness:0.3}));
     ksHinge.position.set(0, tBaseYs[0]-tH/2-0.005, D/2 - 0.04);
     backShell.add(ksHinge);
+    } // end Surface kickstand
     layerGroups.push(backShell); L1.add(backShell);
 
     // Layer 1: Battery (inside tablet body, covers most of interior)
@@ -4879,7 +4880,7 @@ function renderQ(){
   document.getElementById('q-next').style.display='none';
   var opts=document.getElementById('q-opts');opts.innerHTML='';
   q.opts.forEach(function(o,i){var b=document.createElement('button');b.className='qopt';b.textContent=o;b.onclick=function(){
-    Array.from(opts.children).forEach(function(c,ci){c.classList.add(ci===q.a?'correct':(ci===i?'wrong':''));c.disabled=true;});
+    Array.from(opts.children).forEach(function(c,ci){var cls=ci===q.a?'correct':(ci===i?'wrong':'');if(cls)c.classList.add(cls);c.disabled=true;});
     if(i===q.a)qScore++;
     document.getElementById('q-fb').textContent=q.fb;
     document.getElementById('q-next').style.display='inline-block';
