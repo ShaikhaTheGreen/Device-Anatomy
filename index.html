@@ -2096,6 +2096,10 @@ function buildLevel2(){
   const L2 = levelGroups[1];
   while(L2.children.length)L2.remove(L2.children[0]);
   const dev = DEVICE_DB[S.device];
+  // Apple Silicon / phone SoCs fuse LPDDR onto the package (unified memory).
+  // In that case the board has NO separate DRAM chips — RAM lives inside the CPU package.
+  const isUnifiedMem = /on[- ]?package|pop|unified/i.test((dev.ram&&dev.ram.modules)||'') ||
+                       /unified/i.test((dev.ram&&dev.ram.channels)||'');
   // Helper to tag a mesh with a componentId
   const tag=(m,cid)=>{m.userData.componentId=cid;return m;};
   // PCB board
@@ -2119,14 +2123,28 @@ function buildLevel2(){
     d.position.set(-1.0+c*0.25,0.02,-0.8+r*0.25); L2.add(d);
   }
 
-  // RAM chips
-  const nChips = Math.ceil(dev.ram.sizeGB/2);
-  for(let i=0;i<nChips;i++){
-    const rc=box(0.35,0.1,0.6,Mat.ram(),'ram');
-    rc.position.set(-3+i*0.5,0.08,-1.5); L2.add(rc);
-    // Tiny text on chip (simulated with a dark strip)
-    const label=box(0.25,0.005,0.1,new MeshStandardMaterial({color:0x0a2a12,roughness:0.8}),'ram');
-    label.position.set(-3+i*0.5,0.135,-1.5); L2.add(label);
+  // RAM chips — only for discrete-memory boards. Unified-memory SoCs (Apple
+  // Silicon, iPhone) put the LPDDR dies on top of the CPU package itself, so
+  // the board has no separate DRAM chips. We render small "on-package" LPDDR
+  // dies fused to the CPU package instead.
+  if(!isUnifiedMem){
+    const nChips = Math.ceil(dev.ram.sizeGB/2);
+    for(let i=0;i<nChips;i++){
+      const rc=box(0.35,0.1,0.6,Mat.ram(),'ram');
+      rc.position.set(-3+i*0.5,0.08,-1.5); L2.add(rc);
+      // Tiny text on chip (simulated with a dark strip)
+      const label=box(0.25,0.005,0.1,new MeshStandardMaterial({color:0x0a2a12,roughness:0.8}),'ram');
+      label.position.set(-3+i*0.5,0.135,-1.5); L2.add(label);
+    }
+  } else {
+    // On-package LPDDR — small dies fused beside the CPU die under a shared lid.
+    const lpMat=Mat.ram();
+    for(let i=0;i<2;i++){
+      const lp=box(0.45,0.12,0.55,lpMat,'ram');
+      lp.position.set(-0.5+(i?0.95:-0.95),0.18,-0.3); L2.add(lp);
+      const lab=box(0.3,0.005,0.1,new MeshStandardMaterial({color:0x0a2a12,roughness:0.8}),'ram');
+      lab.position.set(-0.5+(i?0.95:-0.95),0.245,-0.3); L2.add(lab);
+    }
   }
 
   // SSD NAND flash dies
