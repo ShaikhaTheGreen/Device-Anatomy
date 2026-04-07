@@ -1314,17 +1314,21 @@ function buildLevel1(){
     const cW=W*0.6, cD=D*0.8, cH=W*0.6; // tower proportions
     const dBaseYs=[0, cH*0.18, cH*0.36, cH*0.55, cH*0.72, cH*0.88, cH*1.04];
 
-    // Layer 0: Case (tower chassis with glass side panel)
+    // Layer 0: Case — solid metal base only; the rest of the chassis is tempered glass
     const caseGrp = new Group(); caseGrp.userData.layerIndex=0;
-    // Main chassis frame
-    caseGrp.add(box(cW,cH,cD,DM.chassis));
-    caseGrp.children[0].position.y=cH/2;
-    // Glass side panel (transparent)
-    const glass=box(0.02,cH*0.85,cD*0.85,new MeshStandardMaterial({color:0x223344,transparent:true,opacity:0.15,metalness:0.1,roughness:0.1}));
-    glass.position.set(-cW/2-0.01,cH*0.5,0); caseGrp.add(glass);
-    // Front panel (mesh)
+    // Solid metal base (only opaque part of the case)
+    const caseBase=box(cW,cH*0.10,cD,DM.chassis);
+    caseBase.position.y=cH*0.05; caseGrp.add(caseBase);
+    // Tempered glass panels — top, left, right, back, front-upper
+    const glassMat=new MeshStandardMaterial({color:0x223344,transparent:true,opacity:0.14,metalness:0.1,roughness:0.1});
+    const gTop  =box(cW,       0.025, cD,       glassMat); gTop.position.set(0,       cH-0.012, 0);             caseGrp.add(gTop);
+    const gLeft =box(0.025,    cH*0.90, cD*0.97, glassMat); gLeft.position.set(-cW/2+0.012, cH*0.55, 0);         caseGrp.add(gLeft);
+    const gRight=box(0.025,    cH*0.90, cD*0.97, glassMat); gRight.position.set( cW/2-0.012, cH*0.55, 0);        caseGrp.add(gRight);
+    const gBack =box(cW*0.98,  cH*0.90, 0.025,   glassMat); gBack.position.set(0, cH*0.55, -cD/2+0.012);          caseGrp.add(gBack);
+    // Front: lower metal mesh panel + upper glass
     const front=box(cW*0.9,cH*0.3,0.03,DM.chassisDk);
-    front.position.set(0,cH*0.15,cD/2); caseGrp.add(front);
+    front.position.set(0,cH*0.2,cD/2); caseGrp.add(front);
+    const gFront=box(cW*0.98,cH*0.55,0.025,glassMat); gFront.position.set(0, cH*0.63, cD/2-0.012); caseGrp.add(gFront);
     // Feet
     [[-cW*0.35,-cD*0.35],[cW*0.35,-cD*0.35],[-cW*0.35,cD*0.35],[cW*0.35,cD*0.35]].forEach(([x,z])=>{
       const ft=box(0.15,0.08,0.15,Mat.rubber());ft.position.set(x,-0.04,z);caseGrp.add(ft);});
@@ -1474,12 +1478,9 @@ function buildLevel1(){
     backplate.position.set(0,dBaseYs[4]+gpuH/2+0.1,mbD*0.05);gpuGrp.add(backplate);
     layerGroups.push(gpuGrp); L1.add(gpuGrp);
 
-    // Layer 5: Front Panel / I/O (no display for desktop)
+    // Layer 5: (desktop has no display — glass panels are part of the case, Layer 0).
+    // Keep an empty group so layerGroups indices stay aligned with the laptop layout.
     const fpGrp = new Group(); fpGrp.userData.layerIndex=5;
-    // Tempered glass side panel
-    const sidePanel=box(0.04,cH*0.8,cD*0.8,new MeshStandardMaterial({color:0x112233,transparent:true,opacity:0.12,metalness:0.05,roughness:0.05}));
-    sidePanel.position.set(-cW/2-0.02,cH*0.45,0);sidePanel.userData.componentId='display';namedMeshes['display']=sidePanel;
-    fpGrp.add(sidePanel);
     layerGroups.push(fpGrp); L1.add(fpGrp);
 
     // Pad layerGroups so the Memory Units toggle (index 7) aligns with the laptop layout
@@ -2427,7 +2428,7 @@ const LAYER_DEFAULT_CID_BY_FORM = {
   laptop:  ['bottom','battery','board','cpu','thermal','keyboard','display',null,'ram'],
   tablet:  ['bottom','battery','board','thermal','keyboard','display',null,'ram'],
   phone:   ['bottom','battery','board','thermal',null,    'display',null,'ram'],
-  desktop: ['bottom','battery','board','thermal','gpu',   'display',null,'ram']
+  desktop: ['bottom','battery','board','thermal','gpu',   null,     null,'ram']
 };
 function getPortFallbackCid(portType){
   if(!portType) return 'usbc';
@@ -4140,6 +4141,14 @@ function rebuildAll(){
   if(typeof updateZoomUI==='function')updateZoomUI();
   if(typeof updateFlowUI==='function')updateFlowUI();
   document.getElementById('device-badge').textContent=DEVICE_DB[S.device].name;
+  // Hide the "⑦ Display" layer toggle for devices that have no internal display
+  // (e.g. desktops — the monitor is external). Re-show it for everything else.
+  {
+    const dev2=DEVICE_DB[S.device];
+    const noDisplay = (dev2.formFactor==='desktop') || !(dev2.display && dev2.display.size>0);
+    const dispBtn = document.querySelector('#layer-ctrls .btn[data-idx="6"]');
+    if(dispBtn) dispBtn.style.display = noDisplay ? 'none' : '';
+  }
   // Re-enable active flows
   Object.keys(S.flows).forEach(k=>{if(S.flows[k]&&!k.startsWith('periph_'))createFlowTube(k);});
 }
