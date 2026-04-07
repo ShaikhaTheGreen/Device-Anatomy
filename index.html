@@ -3137,6 +3137,28 @@ function connectPeripheral(periph){
   showPeripheralInfo(periph);
 }
 
+// Rebuild peripheral flow tubes each frame so they track exploded layers
+const _periphAnchors={printer:'usbc',usbdrive:'usbc',extssd:'usbc',monitor:'dispconn'};
+const _vAnchor=new Vector3();
+function updatePeriphTubes(){
+  Object.keys(periphFlowTubes).forEach(periph=>{
+    const tube=periphFlowTubes[periph]; if(!tube) return;
+    const compId=_periphAnchors[periph]||'usbc';
+    const m=findMeshInCurrentLevel(compId)||namedMeshes[compId];
+    if(!m) return;
+    m.getWorldPosition(_vAnchor);
+    const periphPos=periphModels[periph]?periphModels[periph].position:null;
+    if(!periphPos) return;
+    // 3-point curve: peripheral → mid-air arc → device port
+    const start=new Vector3(periphPos.x,periphPos.y+0.2,periphPos.z);
+    const end=new Vector3(_vAnchor.x,_vAnchor.y+0.05,_vAnchor.z);
+    const mid=new Vector3((start.x+end.x)/2,Math.max(start.y,end.y)+0.4,(start.z+end.z)/2);
+    const curve=new CatmullRomCurve3([start,mid,end]);
+    tube.geometry.dispose();
+    tube.geometry=new TubeGeometry(curve,24,0.03,8,false);
+  });
+}
+
 function disconnectPeripheral(periph){
   S.peripherals[periph].connected=false;
   periphModels[periph].visible=false;
@@ -4326,6 +4348,7 @@ function animate(){
   // before flow tubes/particles sample getWorldPosition()
   scene.updateMatrixWorld(true);
   updateFlowTubes();
+  updatePeriphTubes();
   updateFlowParticles(dt);
   updateIRQPulses(dt);
   updateFlashes(dt);
