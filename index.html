@@ -3830,8 +3830,26 @@ S.layers.forEach((l,i)=>{
 
 // Explosion
 const gapSlider=document.getElementById('gap-slider'),gapVal=document.getElementById('gap-val');
-gapSlider.oninput=()=>{S.targetGap=+gapSlider.value/100;gapVal.textContent=gapSlider.value;};
-document.getElementById('btn-explode').onclick=()=>{S.targetGap=1;gapSlider.value=100;gapVal.textContent='100';};
+function frameForExplosion(){
+  // Dolly the camera so the exploded device stays fully framed.
+  // Compute target distance from gap; preserve current viewing angle.
+  const lg = levelGroups[S.zoomLevel-1]; if(!lg) return;
+  const box = new THREE.Box3().setFromObject(lg);
+  if(!isFinite(box.min.x)) return;
+  const size = new Vector3(); box.getSize(size);
+  const center = new Vector3(); box.getCenter(center);
+  // Account for the predicted explosion spread (gap stretches layers vertically by ~6× layer height)
+  const spread = 1 + S.targetGap*1.6;
+  const radius = Math.max(size.x, size.y*spread, size.z) * 0.6 + 2;
+  const fov = camera.fov * Math.PI/180;
+  const dist = Math.max(5, radius / Math.sin(fov/2));
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  const newPos = center.clone().add(dir.multiplyScalar(dist));
+  S.camAnim={from:{pos:camera.position.clone(),tgt:controls.target.clone()},
+             to:{pos:newPos,tgt:center.clone()},t:0,dur:0.6};
+}
+gapSlider.oninput=()=>{S.targetGap=+gapSlider.value/100;gapVal.textContent=gapSlider.value;frameForExplosion();};
+document.getElementById('btn-explode').onclick=()=>{S.targetGap=1;gapSlider.value=100;gapVal.textContent='100';frameForExplosion();};
 // 100mm reference ruler — 1mm = 1/50 scene units, so 100mm = 2 units
 const _rulerGroup = new Group();
 {
@@ -3852,7 +3870,7 @@ document.getElementById('btn-ruler').onclick=()=>{
   _rulerGroup.visible=!_rulerGroup.visible;
   document.getElementById('btn-ruler').classList.toggle('active',_rulerGroup.visible);
 };
-document.getElementById('btn-assemble').onclick=()=>{S.targetGap=0;gapSlider.value=0;gapVal.textContent='0';};
+document.getElementById('btn-assemble').onclick=()=>{S.targetGap=0;gapSlider.value=0;gapVal.textContent='0';frameForExplosion();};
 
 // Zoom level buttons
 const zoomBtns=document.getElementById('zoom-level-btns');
