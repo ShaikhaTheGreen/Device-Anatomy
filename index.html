@@ -3831,22 +3831,30 @@ S.layers.forEach((l,i)=>{
 // Explosion
 const gapSlider=document.getElementById('gap-slider'),gapVal=document.getElementById('gap-val');
 function frameForExplosion(){
-  // Dolly the camera so the exploded device stays fully framed.
-  // Compute target distance from gap; preserve current viewing angle.
-  const lg = levelGroups[S.zoomLevel-1]; if(!lg) return;
-  const box = new THREE.Box3().setFromObject(lg);
-  if(!isFinite(box.min.x)) return;
-  const size = new Vector3(); box.getSize(size);
-  const center = new Vector3(); box.getCenter(center);
-  // Account for the predicted explosion spread (gap stretches layers vertically by ~6× layer height)
-  const spread = 1 + S.targetGap*1.6;
-  const radius = Math.max(size.x, size.y*spread, size.z) * 0.6 + 2;
+  // Dolly the camera so the fully-exploded device stays in view.
+  // Predict the exploded extents from device dimensions instead of the
+  // current (still-animating) bounding box.
+  const dev = DEVICE_DB[S.device]; const dm = devDims(dev);
+  // Predicted Y span at full gap: animate loop spreads layers by up to ~dm.h*6 + 0.56
+  // plus the layer thickness itself; use a generous estimate so nothing clips.
+  // Measured: at gap=1 the laptop layer stack spans ~12 units in Y, centered ~6.
+  // Scale linearly with gap so partial explosions also frame correctly.
+  const ySpan = 1.5 + S.targetGap * 12;
+  const xSpan = dm.w * (dev.formFactor==='desktop' ? (1 + S.targetGap*3) : 1.2);
+  const zSpan = dm.d * 1.2;
+  const radius = Math.max(xSpan, ySpan, zSpan) * 0.65 + 2;
   const fov = camera.fov * Math.PI/180;
-  const dist = Math.max(5, radius / Math.sin(fov/2));
-  const dir = camera.position.clone().sub(controls.target).normalize();
+  const aspect = renderer.domElement.clientWidth / renderer.domElement.clientHeight;
+  const distV = radius / Math.sin(fov/2);
+  const distH = radius / (Math.sin(fov/2)*aspect);
+  const dist = Math.max(distV, distH, 5);
+  const center = new Vector3(0, ySpan*0.5, 0);
+  let dir = camera.position.clone().sub(controls.target);
+  if(dir.lengthSq() < 0.001) dir = new Vector3(1, 0.6, 1);
+  dir.normalize();
   const newPos = center.clone().add(dir.multiplyScalar(dist));
   S.camAnim={from:{pos:camera.position.clone(),tgt:controls.target.clone()},
-             to:{pos:newPos,tgt:center.clone()},t:0,dur:0.6};
+             to:{pos:newPos,tgt:center.clone()},t:0,dur:0.7};
 }
 gapSlider.oninput=()=>{S.targetGap=+gapSlider.value/100;gapVal.textContent=gapSlider.value;frameForExplosion();};
 document.getElementById('btn-explode').onclick=()=>{S.targetGap=1;gapSlider.value=100;gapVal.textContent='100';frameForExplosion();};
