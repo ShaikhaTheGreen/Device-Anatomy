@@ -66,7 +66,12 @@ body{background:var(--bg);color:var(--text-primary);font-family:-apple-system,sy
 #quiz-card .qbtn:hover{background:var(--apple-blue-hover)}
 #quiz-card .qclose{background:none;color:var(--text-secondary);margin-left:8px}
 @media (max-width:768px){#topbar{padding:0 14px}#topbar .tb-title{font-size:15px}#topbar .tb-sub{display:none}}
-#sidebar{width:240px;min-width:240px;background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-right:var(--border);padding:18px 14px 14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;z-index:30;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent;transition:transform .3s cubic-bezier(0.4,0,0.2,1);color:var(--text-primary)}
+#sidebar{width:240px;min-width:200px;max-width:560px;background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-right:var(--border);padding:18px 14px 14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;z-index:30;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent;transition:transform .3s cubic-bezier(0.4,0,0.2,1);color:var(--text-primary);position:relative;flex-shrink:0}
+#sidebar-resizer{position:fixed;top:0;left:237px;width:6px;height:100vh;cursor:col-resize;z-index:40;background:transparent;transition:background .15s}
+@media (max-width:780px){#sidebar-resizer{display:none}}
+#sidebar-resizer:hover,#sidebar-resizer.dragging{background:rgba(239,159,39,0.35)}
+body.sidebar-resizing{cursor:col-resize!important;user-select:none}
+body.sidebar-resizing #sidebar{transition:none}
 #sidebar-toggle{display:none;position:absolute;top:10px;left:10px;z-index:35;background:rgba(20,16,12,.92);border:1px solid rgba(239,159,39,.45);color:#EF9F27;font-size:18px;padding:6px 10px;border-radius:6px;cursor:pointer;backdrop-filter:blur(6px)}
 @media (max-width:768px){
   body{padding-top:48px}
@@ -311,6 +316,7 @@ select:focus{border-color:var(--apple-blue);box-shadow:0 0 0 3px rgba(0,113,227,
     <button id="tc-next">Next →</button>
   </div>
 </div></div>
+<div id="sidebar-resizer" title="Drag to resize sidebar" aria-label="Resize sidebar" role="separator" aria-orientation="vertical" tabindex="0"></div>
 <div id="sidebar">
   <div class="sidebar-logo" style="display:none"></div>
   <div class="sec">Device</div>
@@ -4115,6 +4121,75 @@ function buildCustomUI(){
   });
 }
 buildCustomUI();
+
+// ---------- Resizable sidebar ----------
+(function(){
+  const sidebar=document.getElementById('sidebar');
+  const resizer=document.getElementById('sidebar-resizer');
+  if(!sidebar||!resizer) return;
+  const MIN=200, MAX=560, KEY='da_sidebarWidth';
+  function applyWidth(w){
+    w=Math.max(MIN,Math.min(MAX,w|0));
+    sidebar.style.width=w+'px';
+    sidebar.style.minWidth=w+'px';
+    resizer.style.left=(w-3)+'px';
+    // Tell the three.js viewport to re-measure
+    window.dispatchEvent(new Event('resize'));
+    return w;
+  }
+  // Load saved width
+  const saved=parseInt(localStorage.getItem(KEY)||'',10);
+  if(saved>=MIN && saved<=MAX) applyWidth(saved);
+  else applyWidth(240);
+  let dragging=false, startX=0, startW=0;
+  function onMove(e){
+    if(!dragging) return;
+    const x=(e.touches?e.touches[0].clientX:e.clientX);
+    applyWidth(startW+(x-startX));
+  }
+  function onUp(){
+    if(!dragging) return;
+    dragging=false;
+    resizer.classList.remove('dragging');
+    document.body.classList.remove('sidebar-resizing');
+    localStorage.setItem(KEY, parseInt(sidebar.style.width,10));
+    window.removeEventListener('mousemove',onMove);
+    window.removeEventListener('mouseup',onUp);
+    window.removeEventListener('touchmove',onMove);
+    window.removeEventListener('touchend',onUp);
+  }
+  function onDown(e){
+    if(window.innerWidth<=780) return; // mobile bottom-sheet mode
+    dragging=true;
+    startX=(e.touches?e.touches[0].clientX:e.clientX);
+    startW=sidebar.getBoundingClientRect().width;
+    resizer.classList.add('dragging');
+    document.body.classList.add('sidebar-resizing');
+    window.addEventListener('mousemove',onMove);
+    window.addEventListener('mouseup',onUp);
+    window.addEventListener('touchmove',onMove,{passive:false});
+    window.addEventListener('touchend',onUp);
+    e.preventDefault();
+  }
+  resizer.addEventListener('mousedown',onDown);
+  resizer.addEventListener('touchstart',onDown,{passive:false});
+  // Keyboard: arrow keys nudge, Home resets
+  resizer.addEventListener('keydown',e=>{
+    const cur=parseInt(sidebar.style.width,10)||240;
+    if(e.key==='ArrowLeft') applyWidth(cur-12);
+    else if(e.key==='ArrowRight') applyWidth(cur+12);
+    else if(e.key==='Home') applyWidth(240);
+    else return;
+    localStorage.setItem(KEY, parseInt(sidebar.style.width,10));
+    e.preventDefault();
+  });
+  // Double-click resets to default
+  resizer.addEventListener('dblclick',()=>{
+    applyWidth(240);
+    localStorage.setItem(KEY,'240');
+  });
+})();
+
 
 function rebuildAll(){
   layerGroups.length=0;portLabels.length=0;
