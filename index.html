@@ -33,16 +33,15 @@ body{background:var(--bg);color:var(--text-primary);font-family:-apple-system,sy
 #topbar .tb-affil{display:flex;align-items:center;direction:rtl}
 #topbar .tb-affil-col{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.25;text-align:center;padding:0 16px;position:relative}
 #topbar .tb-affil-col+.tb-affil-col::before{content:"";position:absolute;right:0;top:50%;transform:translateY(-50%);width:1px;height:24px;background:rgba(0,0,0,0.1)}
-#topbar .tb-affil-ar{font-size:13px;font-weight:600;color:#1d1d1f;font-family:'SF Arabic','Geeza Pro','Tahoma',-apple-system,sans-serif;direction:rtl;letter-spacing:0;white-space:nowrap}
-#topbar .tb-affil-en{font-size:8px;font-weight:600;color:#86868b;text-transform:uppercase;letter-spacing:0.09em;margin-top:3px;white-space:nowrap}
+#topbar .tb-affil-ar{font-size:11px;font-weight:300;color:#86868b;font-family:'SF Arabic','Geeza Pro','Tahoma',-apple-system,sans-serif;direction:rtl;letter-spacing:0;white-space:nowrap;margin-top:3px}
+#topbar .tb-affil-en{font-size:12px;font-weight:600;color:#1d1d1f;text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap}
 @media (max-width:1280px){#topbar .tb-affil-col:nth-child(3){display:none}}
 @media (max-width:1080px){#topbar .tb-affil-col:nth-child(2){display:none}}
 @media (max-width:920px){#topbar .tb-affil,#topbar .tb-divider{display:none}}
-#topbar .tb-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;pointer-events:none;text-align:center}
+#topbar .tb-center{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;line-height:1.2;text-align:left;margin-left:18px;padding-left:18px;border-left:1px solid rgba(0,0,0,0.12);flex:1;min-width:0}
 #topbar .tb-title{font-size:19px;font-weight:600;color:var(--text-primary);letter-spacing:-0.022em}
 #topbar .tb-sub{font-size:11.5px;font-weight:500;color:var(--text-secondary);letter-spacing:0.01em;margin-top:2px}
 #topbar .tb-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-@media (max-width:1180px){#topbar .tb-center{position:static;transform:none}}
 #topbar .tb-pill{background:var(--apple-blue);color:#fff;border:none;border-radius:var(--radius-pill);padding:7px 16px;font-size:13px;font-weight:500;font-family:inherit;letter-spacing:-0.01em;cursor:pointer;transition:var(--transition);box-shadow:0 1px 2px rgba(0,113,227,0.2)}
 #topbar .tb-pill:hover{background:var(--apple-blue-hover)}
 #topbar .tb-pill.off{background:rgba(0,0,0,0.06);color:var(--text-primary);box-shadow:none}
@@ -79,8 +78,8 @@ body{background:var(--bg);color:var(--text-primary);font-family:-apple-system,sy
   #sidebar-toggle{display:flex;align-items:center;justify-content:center;position:fixed;top:8px;left:14px;z-index:101;background:transparent;border:none;color:var(--text-primary);font-size:22px;padding:6px 10px;border-radius:var(--radius-sm);cursor:pointer;backdrop-filter:none}
   #mission-bar{max-width:calc(100vw - 28px);font-size:12px;padding:8px 12px;top:60px}
   #mission-bar .mt{font-size:12px}
-  #info-panel{width:100%;height:72vh;top:auto;bottom:0;left:0;right:0;border-left:none;border-top:var(--border);border-radius:18px 18px 0 0;transform:translateY(100%);padding:24px 22px 22px;z-index:55}
-  #info-panel.open{transform:translateY(0)}
+  #info-panel#info-panel{width:100%;height:72vh;top:auto;bottom:0;left:0;right:0;border-left:none;border-top:var(--border);border-radius:18px 18px 0 0;transform:translateY(100%);padding:24px 22px 22px;z-index:55}
+  #info-panel#info-panel.open{transform:translateY(0)}
   #info-panel::before{width:100%;height:3px;top:0}
   #info-panel::after{content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);width:36px;height:4px;border-radius:2px;background:rgba(0,0,0,0.18)}
   #progress-ring{top:60px;right:14px;font-size:11px;padding:5px 12px 5px 6px}
@@ -256,6 +255,18 @@ select:focus{border-color:var(--apple-blue);box-shadow:0 0 0 3px rgba(0,113,227,
 #tour-card button.skip:hover{background:rgba(0,0,0,0.05);color:var(--text-primary)}
 #btn-tour{position:absolute;top:68px;right:18px;z-index:7;background:var(--surface-strong);backdrop-filter:var(--blur);border:var(--border);color:var(--apple-blue);padding:6px 14px;border-radius:var(--radius-pill);font-size:12px;cursor:pointer;letter-spacing:-0.01em;font-weight:500;font-family:inherit;box-shadow:var(--shadow-float);transition:var(--transition)}
 #btn-tour:hover{background:var(--apple-blue);color:#fff}
+/* Mobile overrides — placed last to win cascade */
+@media (max-width:768px){
+  body #topbar .tb-logo{height:34px}
+  body #topbar{height:52px}
+  body{padding-top:52px}
+  body #mission-bar{max-width:calc(100vw - 28px);left:14px;right:14px;transform:none;width:auto}
+  body #sidebar-toggle{display:flex;position:fixed;top:8px;left:8px;z-index:110;background:rgba(0,0,0,0.06);border:none;color:#1d1d1f;width:38px;height:38px;border-radius:50%;font-size:18px;align-items:center;justify-content:center}
+  body #topbar .tb-brand{display:none}
+  body #topbar{justify-content:space-between;padding-left:56px}
+  body #topbar .tb-center{margin-left:0;padding-left:0;border-left:none;align-items:flex-start}
+  body #topbar .tb-affil,body #topbar .tb-divider{display:none}
+}
 </style>
 </head>
 <body>
@@ -264,8 +275,8 @@ select:focus{border-color:var(--apple-blue);box-shadow:0 0 0 3px rgba(0,113,227,
     <img class="tb-logo" src="ku-full.png" alt="Kuwait University · جامعة الكويت">
     <div class="tb-divider"></div>
     <div class="tb-affil">
-      <div class="tb-affil-col"><div class="tb-affil-ar">قسم علوم المعلومات</div><div class="tb-affil-en">Information Science Department</div></div>
-      <div class="tb-affil-col"><div class="tb-affil-ar">كلية العلوم الحياتية</div><div class="tb-affil-en">College of Life Sciences</div></div>
+      <div class="tb-affil-col"><div class="tb-affil-en">Information Science Department</div><div class="tb-affil-ar">قسم علوم المعلومات</div></div>
+      <div class="tb-affil-col"><div class="tb-affil-en">College of Life Sciences</div><div class="tb-affil-ar">كلية العلوم الحياتية</div></div>
     </div>
   </div>
   <div class="tb-center">
