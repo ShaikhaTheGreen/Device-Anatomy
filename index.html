@@ -324,6 +324,7 @@ select:focus{border-color:var(--apple-blue);box-shadow:0 0 0 3px rgba(0,113,227,
   <div class="btn-row" style="margin-top:4px"><div class="btn" id="btn-ruler" role="button" tabindex="0" aria-label="Toggle 100mm scale ruler">Show Ruler (100mm)</div></div>
   <div class="sec">Zoom Level</div>
   <div class="btn-row" id="zoom-level-btns"></div>
+  <div class="btn-row" style="margin-top:4px"><div class="btn secondary" id="btn-tanenbaum-layers" role="button" tabindex="0" title="Show Tanenbaum 6-layer model">📚 Tanenbaum 6-Layer Model</div></div>
   <div class="sec">Flow Builder</div>
   <div style="display:flex;flex-direction:column;gap:6px">
     <div style="display:flex;align-items:center;gap:8px"><label style="width:36px;color:var(--text-secondary);font-size:12px">From</label><select id="flow-from" style="flex:1"></select></div>
@@ -350,6 +351,26 @@ select:focus{border-color:var(--apple-blue);box-shadow:0 0 0 3px rgba(0,113,227,
     <button class="x" id="close-info">&times;</button>
     <h3 id="info-title"></h3>
     <div id="info-body"></div>
+  </div>
+  <div id="tanenbaum-modal" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:80;align-items:center;justify-content:center;padding:24px">
+    <div style="background:var(--surface-strong);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-radius:16px;max-width:680px;width:100%;max-height:86vh;overflow-y:auto;padding:26px 30px;color:var(--text-primary);box-shadow:0 20px 60px rgba(0,0,0,0.35);position:relative">
+      <button id="tan-close" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:24px;cursor:pointer;color:var(--text-secondary);width:30px;height:30px;border-radius:50%">&times;</button>
+      <h3 style="margin:0 0 6px;font-size:19px;font-weight:600;letter-spacing:-0.02em">Tanenbaum's 6-Layer Model</h3>
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:16px">Structured Computer Organization, 6th ed., Ch. 1.1, Fig. 1-2</div>
+      <div style="font-size:13px;line-height:1.55;margin-bottom:14px">Tanenbaum organizes a computer as six virtual machines stacked on each other. This tool's physical zoom (Laptop → Board → Chip → Pipeline → Cell) is a different but complementary axis. Use the mapping below to read the book and the 3D view side-by-side:</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+        <thead><tr style="text-align:left;border-bottom:1px solid rgba(0,0,0,0.12)"><th style="padding:8px 6px">Lvl</th><th style="padding:8px 6px">Tanenbaum Layer</th><th style="padding:8px 6px">Chapter</th><th style="padding:8px 6px">Tool Zoom</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:7px 6px">5</td><td style="padding:7px 6px"><b>Problem-Oriented Language</b><br><span style="color:var(--text-secondary)">Python, C, Java source</span></td><td style="padding:7px 6px">—</td><td style="padding:7px 6px">(not shown)</td></tr>
+          <tr><td style="padding:7px 6px">4</td><td style="padding:7px 6px"><b>Assembly Language</b></td><td style="padding:7px 6px">Ch. 7</td><td style="padding:7px 6px">(not shown)</td></tr>
+          <tr><td style="padding:7px 6px">3</td><td style="padding:7px 6px"><b>Operating System Machine</b><br><span style="color:var(--text-secondary)">Virtual memory, paging, processes</span></td><td style="padding:7px 6px">Ch. 6</td><td style="padding:7px 6px">MMU / TLB tooltip</td></tr>
+          <tr><td style="padding:7px 6px">2</td><td style="padding:7px 6px"><b>Instruction Set Architecture (ISA)</b></td><td style="padding:7px 6px">Ch. 5</td><td style="padding:7px 6px">Pipeline zoom (instructions)</td></tr>
+          <tr><td style="padding:7px 6px">1</td><td style="padding:7px 6px"><b>Microarchitecture</b><br><span style="color:var(--text-secondary)">ALU, registers, data path, control unit, 5-stage pipeline</span></td><td style="padding:7px 6px">Ch. 4</td><td style="padding:7px 6px">Chip / SoC + Pipeline zoom</td></tr>
+          <tr><td style="padding:7px 6px">0</td><td style="padding:7px 6px"><b>Digital Logic</b><br><span style="color:var(--text-secondary)">Gates, flip-flops, memory cells</span></td><td style="padding:7px 6px">Ch. 3</td><td style="padding:7px 6px">Cell / Digital Logic zoom</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:16px;padding:12px 14px;background:var(--hint-yellow);border-left:3px solid #ffd60a;border-radius:6px;font-size:12px;line-height:1.5"><b>Note:</b> Tanenbaum Ch. 2 (Computer Systems Organization) sits across several layers — it introduces the CPU, main memory, secondary storage, buses, and I/O as a whole, before zooming in on each layer individually in later chapters.</div>
+    </div>
   </div>
   <div id="periph-dock">
     <div class="periph-item" data-periph="printer"><div class="pi">🖨️</div><div class="pt">Printer</div></div>
@@ -2254,6 +2275,12 @@ function buildLevel3(){
   }
   const l3=box(4.2,0.04,0.5,Mat.cacheB(),'cache');l3.position.set(-0.2,0.06,1.5);L3.add(l3);
   const mc=box(0.8,0.08,0.5,M('mc',{color:0x336699,emissive:0x224466,emissiveIntensity:0.3,metalness:0.3,roughness:0.4}),'memctrl');mc.position.set(-2,0.07,1.5);L3.add(mc);
+  // MMU / TLB sub-block (Tanenbaum Ch. 6.1) — sits on top of the memory controller
+  const mmuBox=box(0.35,0.05,0.35,M('mmu',{color:0x66aadd,emissive:0x3388cc,emissiveIntensity:0.5,metalness:0.3,roughness:0.3}),'mmu');
+  mmuBox.position.set(-2,0.13,1.5); L3.add(mmuBox);
+  // Control Unit (Tanenbaum Ch. 2.1, Fig. 2-1) — sits between the P-cores and the shared L3 cache
+  const cu=box(1.2,0.1,0.35,M('cu',{color:0xcc4466,emissive:0x992244,emissiveIntensity:0.5,metalness:0.3,roughness:0.35}),'controlunit');
+  cu.position.set(-1.0,0.09,1.05); L3.add(cu);
   const pc2=box(0.6,0.08,0.5,M('pc2',{color:0x229988,emissive:0x116655,emissiveIntensity:0.3,metalness:0.3,roughness:0.4}),'pcictrl');pc2.position.set(2,0.07,1.5);L3.add(pc2);
   // Ring bus
   const rp=new CatmullRomCurve3([new Vector3(-2.3,0.12,-2),new Vector3(2.3,0.12,-2),new Vector3(2.3,0.12,1.2),new Vector3(-2.3,0.12,1.2)],true);
@@ -2267,7 +2294,7 @@ function buildLevel4(){
   const stages=[
     {n:'Instruction\nFetch',x:-3,w:1.2,d:1.5,c:0x3366cc,e:0x2244aa,id:'fetchu'},
     {n:'Decode',x:-1.3,w:1,d:1.5,c:0x5588cc,e:0x3366aa,id:'decodeu'},
-    {n:'Execute',x:0.3,w:1.8,d:1.5,c:0x44aa66,e:0x228844,id:'alu'},
+    {n:'Execute',x:0.3,w:1.8,d:1.5,c:0x44aa66,e:0x228844,id:'executeu'},
     {n:'Memory\nAccess',x:2.5,w:1,d:1.5,c:0xcc8833,e:0xaa6622,id:'memu'},
     {n:'Write\nBack',x:3.9,w:0.9,d:1.5,c:0x9955cc,e:0x7733aa,id:'writeback'}
   ];
@@ -2362,6 +2389,30 @@ function buildLevel5(){
   const arrMat=M('marr',{color:0xEF9F27,emissive:0xEF9F27,emissiveIntensity:0.5,transparent:true,opacity:0.7});
   const a1=box(2,0.02,0.04,arrMat,'arrows'); a1.position.set(-0.5,-0.18,0); L5.add(a1);
   const a2=box(0.04,0.9,0.04,arrMat,'arrows'); a2.position.set(2.2,0.7,0); L5.add(a2);
+
+  // ---------- Digital Logic sub-view: gates & flip-flops ----------
+  // Tanenbaum Ch. 3.1–3.3 — one level below the DRAM memory cell.
+  // Not a full schematic; symbolic boxes labeled as gates / a D flip-flop,
+  // all tagged to the 'gates' COMP_INFO entry for tooltip lookup.
+  const gateGroup=new Group(); gateGroup.position.set(-2.4,1.3,0); L5.add(gateGroup);
+  const gateBg=box(2.2,0.02,1.7,M('gbg',{color:0x0c1218,roughness:0.6}),'gates');
+  gateGroup.add(gateBg);
+  const gateMat=M('gm',{color:0x88cc88,emissive:0x228822,emissiveIntensity:0.6,metalness:0.3,roughness:0.35});
+  const invMat =M('im',{color:0xffcc55,emissive:0x996600,emissiveIntensity:0.6,metalness:0.3,roughness:0.35});
+  const ffMat  =M('fm',{color:0xcc77ff,emissive:0x661199,emissiveIntensity:0.6,metalness:0.3,roughness:0.35});
+  // Row of 3 gate symbols: NOT (inverter), NAND, AND
+  const inv=box(0.35,0.06,0.25,invMat,'gates'); inv.position.set(-0.75,0.05,-0.55); gateGroup.add(inv);
+  const nandG=box(0.35,0.06,0.25,gateMat,'gates'); nandG.position.set(-0.15,0.05,-0.55); gateGroup.add(nandG);
+  const andG =box(0.35,0.06,0.25,gateMat,'gates'); andG.position.set( 0.45,0.06,-0.55); gateGroup.add(andG);
+  // D flip-flop (1-bit memory) rendered as a larger box
+  const ff=box(0.55,0.08,0.35,ffMat,'gates'); ff.position.set(-0.2,0.06,0.25); gateGroup.add(ff);
+  // Wires (symbolic) linking gates into the flip-flop
+  const wireMat=M('gw',{color:0xEF9F27,emissive:0xEF9F27,emissiveIntensity:0.5,transparent:true,opacity:0.7});
+  const w1=box(0.02,0.01,0.5,wireMat,'gates'); w1.position.set(-0.75,0.04,-0.15); gateGroup.add(w1);
+  const w2=box(0.02,0.01,0.5,wireMat,'gates'); w2.position.set(-0.15,0.04,-0.15); gateGroup.add(w2);
+  const w3=box(0.02,0.01,0.5,wireMat,'gates'); w3.position.set( 0.45,0.04,-0.15); gateGroup.add(w3);
+  // Connector arrow: DRAM cell array → gates / digital logic
+  const gArr=box(0.04,0.02,2,arrMat,'arrows'); gArr.position.set(0.3,1.28,0); L5.add(gArr);
 }
 
 // Layer index → default componentId for Level-1 untagged sub-meshes.
@@ -4167,6 +4218,16 @@ document.getElementById('btn-ruler').onclick=()=>{
   document.getElementById('btn-ruler').classList.toggle('active',_rulerGroup.visible);
 };
 document.getElementById('btn-assemble').onclick=()=>{S.targetGap=0;gapSlider.value=0;gapVal.textContent='0';frameForExplosion();};
+// Tanenbaum 6-layer overlay modal
+(function(){
+  const modal=document.getElementById('tanenbaum-modal');
+  const openBtn=document.getElementById('btn-tanenbaum-layers');
+  const closeBtn=document.getElementById('tan-close');
+  if(openBtn) openBtn.onclick=()=>{ modal.style.display='flex'; };
+  if(closeBtn) closeBtn.onclick=()=>{ modal.style.display='none'; };
+  if(modal) modal.addEventListener('click',e=>{ if(e.target===modal) modal.style.display='none'; });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape' && modal.style.display==='flex') modal.style.display='none'; });
+})();
 
 // Zoom level buttons
 const zoomBtns=document.getElementById('zoom-level-btns');
