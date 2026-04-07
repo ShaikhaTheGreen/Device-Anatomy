@@ -3055,7 +3055,7 @@ function getPeriphPos(){
     printer:[-dm.w*0.9,0.2,dm.d*0.3],
     monitor:[0,0,-dm.d*1.6],           // far behind laptop, clear of display lid
     usbdrive:[-dm.w/2-0.15,dm.h*2+0.04,-dm.d*0.25],  // near left-side USB-C port
-    extssd:[dm.w/2+0.25,dm.h*2+0.04,dm.d*0.15]       // right-side, near front USB-C
+    extssd:[dm.w/2+1.4,0.05,dm.d*0.15]               // sitting on the table to the right of the laptop
   };
 }
 const PERIPH_POS=getPeriphPos();
@@ -3149,13 +3149,15 @@ function updatePeriphTubes(){
     m.getWorldPosition(_vAnchor);
     const periphPos=periphModels[periph]?periphModels[periph].position:null;
     if(!periphPos) return;
-    // 3-point curve: peripheral → mid-air arc → device port
-    const start=new Vector3(periphPos.x,periphPos.y+0.2,periphPos.z);
-    const end=new Vector3(_vAnchor.x,_vAnchor.y+0.05,_vAnchor.z);
-    const mid=new Vector3((start.x+end.x)/2,Math.max(start.y,end.y)+0.4,(start.z+end.z)/2);
-    const curve=new CatmullRomCurve3([start,mid,end]);
+    // Cable from the peripheral's USB-C plug to the laptop's port, with a sag.
+    const start=new Vector3(periphPos.x-0.18,periphPos.y+0.04,periphPos.z);
+    const end=new Vector3(_vAnchor.x,_vAnchor.y+0.04,_vAnchor.z);
+    const sag=Math.min(start.y,end.y)-0.15;
+    const m1=new Vector3(start.x*0.66+end.x*0.34, sag, start.z*0.66+end.z*0.34);
+    const m2=new Vector3(start.x*0.34+end.x*0.66, sag, start.z*0.34+end.z*0.66);
+    const curve=new CatmullRomCurve3([start,m1,m2,end]);
     tube.geometry.dispose();
-    tube.geometry=new TubeGeometry(curve,24,0.03,8,false);
+    tube.geometry=new TubeGeometry(curve,32,0.025,8,false);
   });
 }
 
