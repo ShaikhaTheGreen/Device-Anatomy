@@ -25,18 +25,24 @@
   --hint-yellow:rgba(255,214,10,0.12);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-body{background:var(--bg);color:var(--text-primary);font-family:-apple-system,system-ui,'SF Pro Text','SF Pro',BlinkMacSystemFont,'Helvetica Neue',sans-serif;overflow:hidden;height:100vh;display:flex;font-size:15px;font-weight:400;letter-spacing:-0.01em;padding-top:52px}
-#topbar{position:fixed;top:0;left:0;right:0;height:52px;background:rgba(255,255,255,0.85);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:100}
-#topbar .tb-left,#topbar .tb-right{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
-#topbar .tb-right{justify-content:flex-end}
-#topbar .tb-logo{height:36px;width:auto;display:block;flex-shrink:0}
-#topbar .tb-uni{display:flex;flex-direction:column;line-height:1.1;letter-spacing:-0.005em}
-#topbar .tb-uni-ar{font-size:13px;font-weight:600;color:var(--text-primary);font-family:'SF Arabic','Geeza Pro',-apple-system,sans-serif}
-#topbar .tb-uni-en{font-size:10px;font-weight:500;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.04em;margin-top:2px}
-@media (max-width:768px){#topbar .tb-uni{display:none}}
-#topbar .tb-center{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;pointer-events:none}
-#topbar .tb-title{font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-0.02em}
-#topbar .tb-sub{font-size:12px;font-weight:400;color:var(--text-secondary);letter-spacing:-0.005em;margin-top:1px}
+body{background:var(--bg);color:var(--text-primary);font-family:-apple-system,system-ui,'SF Pro Text','SF Pro',BlinkMacSystemFont,'Helvetica Neue',sans-serif;overflow:hidden;height:100vh;display:flex;font-size:15px;font-weight:400;letter-spacing:-0.01em;padding-top:78px}
+#topbar{position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,0.92);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;height:78px;padding:0 28px;z-index:100;box-shadow:0 1px 0 rgba(0,0,0,0.02)}
+#topbar .tb-brand{display:flex;align-items:center;gap:18px;flex-shrink:0}
+#topbar .tb-logo{height:62px;width:auto;display:block;flex-shrink:0}
+#topbar .tb-divider{width:1px;height:42px;background:rgba(0,0,0,0.12)}
+#topbar .tb-affil{display:flex;align-items:center;direction:rtl}
+#topbar .tb-affil-col{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.25;text-align:center;padding:0 16px;position:relative}
+#topbar .tb-affil-col+.tb-affil-col::before{content:"";position:absolute;right:0;top:50%;transform:translateY(-50%);width:1px;height:24px;background:rgba(0,0,0,0.1)}
+#topbar .tb-affil-ar{font-size:13px;font-weight:600;color:#1d1d1f;font-family:'SF Arabic','Geeza Pro','Tahoma',-apple-system,sans-serif;direction:rtl;letter-spacing:0;white-space:nowrap}
+#topbar .tb-affil-en{font-size:8px;font-weight:600;color:#86868b;text-transform:uppercase;letter-spacing:0.09em;margin-top:3px;white-space:nowrap}
+@media (max-width:1280px){#topbar .tb-affil-col:nth-child(3){display:none}}
+@media (max-width:1080px){#topbar .tb-affil-col:nth-child(2){display:none}}
+@media (max-width:920px){#topbar .tb-affil,#topbar .tb-divider{display:none}}
+#topbar .tb-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;pointer-events:none;text-align:center}
+#topbar .tb-title{font-size:19px;font-weight:600;color:var(--text-primary);letter-spacing:-0.022em}
+#topbar .tb-sub{font-size:11.5px;font-weight:500;color:var(--text-secondary);letter-spacing:0.01em;margin-top:2px}
+#topbar .tb-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+@media (max-width:1180px){#topbar .tb-center{position:static;transform:none}}
 #topbar .tb-pill{background:var(--apple-blue);color:#fff;border:none;border-radius:var(--radius-pill);padding:7px 16px;font-size:13px;font-weight:500;font-family:inherit;letter-spacing:-0.01em;cursor:pointer;transition:var(--transition);box-shadow:0 1px 2px rgba(0,113,227,0.2)}
 #topbar .tb-pill:hover{background:var(--apple-blue-hover)}
 #topbar .tb-pill.off{background:rgba(0,0,0,0.06);color:var(--text-primary);box-shadow:none}
@@ -254,9 +260,22 @@ select:focus{border-color:var(--apple-blue);box-shadow:0 0 0 3px rgba(0,113,227,
 </head>
 <body>
 <div id="topbar">
-  <div class="tb-left"><img class="tb-logo" src="ku-logo.svg" alt="Kuwait University"><div class="tb-uni"><div class="tb-uni-ar">جامعة الكويت</div><div class="tb-uni-en">Kuwait University</div></div></div>
-  <div class="tb-center"><div class="tb-title">Device Anatomy</div><div class="tb-sub">ISC230 · Spring 2026 · Dr. Shaikhah Alkhadhr</div></div>
-  <div class="tb-right"><button id="tb-quiz" class="tb-pill off" title="Start a quick quiz">Quiz</button><button id="tb-labels" class="tb-pill off" title="Toggle component labels">Labels</button></div>
+  <div class="tb-brand">
+    <img class="tb-logo" src="ku-full.png" alt="Kuwait University · جامعة الكويت">
+    <div class="tb-divider"></div>
+    <div class="tb-affil">
+      <div class="tb-affil-col"><div class="tb-affil-ar">قسم علوم المعلومات</div><div class="tb-affil-en">Information Science Department</div></div>
+      <div class="tb-affil-col"><div class="tb-affil-ar">كلية العلوم الحياتية</div><div class="tb-affil-en">College of Life Sciences</div></div>
+    </div>
+  </div>
+  <div class="tb-center">
+    <div class="tb-title">Device Anatomy</div>
+    <div class="tb-sub">ISC230 — IT Infrastructure · Dr. Shaikhah Alkhadhr</div>
+  </div>
+  <div class="tb-right">
+    <button id="tb-quiz" class="tb-pill off" title="Start a quick quiz">Quiz</button>
+    <button id="tb-labels" class="tb-pill off" title="Toggle component labels">Labels</button>
+  </div>
 </div>
 <div id="glossary-tip" class="glossary-tip"></div>
 <div id="quiz-overlay"><div id="quiz-card">
