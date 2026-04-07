@@ -66,8 +66,8 @@ body{background:var(--bg);color:var(--text-primary);font-family:-apple-system,sy
 #quiz-card .qbtn:hover{background:var(--apple-blue-hover)}
 #quiz-card .qclose{background:none;color:var(--text-secondary);margin-left:8px}
 @media (max-width:768px){#topbar{padding:0 14px}#topbar .tb-title{font-size:15px}#topbar .tb-sub{display:none}}
-#sidebar{width:240px;min-width:200px;max-width:560px;background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-right:var(--border);padding:18px 14px 14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;z-index:30;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent;transition:transform .3s cubic-bezier(0.4,0,0.2,1);color:var(--text-primary);position:relative;flex-shrink:0}
-#sidebar-resizer{position:fixed;top:78px;left:236px;width:8px;height:calc(100vh - 78px);cursor:col-resize;z-index:105;background:linear-gradient(to right,transparent 0%,transparent 35%,rgba(0,0,0,0.12) 50%,transparent 65%,transparent 100%);transition:background .15s}
+#sidebar{width:520px;min-width:200px;max-width:720px;background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-right:var(--border);padding:18px 14px 14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;z-index:30;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent;transition:transform .3s cubic-bezier(0.4,0,0.2,1);color:var(--text-primary);position:relative;flex-shrink:0}
+#sidebar-resizer{position:fixed;top:78px;left:516px;width:8px;height:calc(100vh - 78px);cursor:col-resize;z-index:105;background:linear-gradient(to right,transparent 0%,transparent 35%,rgba(0,0,0,0.12) 50%,transparent 65%,transparent 100%);transition:background .15s}
 @media (max-width:780px){#sidebar-resizer{display:none}}
 #sidebar-resizer:hover,#sidebar-resizer.dragging{background:linear-gradient(to right,transparent 0%,transparent 20%,rgba(239,159,39,0.6) 50%,transparent 80%,transparent 100%)}
 #sidebar-resizer:focus-visible{outline:2px solid var(--apple-blue);outline-offset:-2px}
@@ -4128,7 +4128,7 @@ buildCustomUI();
   const sidebar=document.getElementById('sidebar');
   const resizer=document.getElementById('sidebar-resizer');
   if(!sidebar||!resizer) return;
-  const MIN=200, MAX=560, KEY='da_sidebarWidth';
+  const MIN=200, MAX=720, DEFAULT=520, KEY='da_sidebarWidth';
   function applyWidth(w){
     w=Math.max(MIN,Math.min(MAX,w|0));
     sidebar.style.width=w+'px';
@@ -4141,7 +4141,7 @@ buildCustomUI();
   // Load saved width
   const saved=parseInt(localStorage.getItem(KEY)||'',10);
   if(saved>=MIN && saved<=MAX) applyWidth(saved);
-  else applyWidth(240);
+  else applyWidth(DEFAULT);
   let dragging=false, startX=0, startW=0;
   function onMove(e){
     if(!dragging) return;
@@ -4176,18 +4176,18 @@ buildCustomUI();
   resizer.addEventListener('touchstart',onDown,{passive:false});
   // Keyboard: arrow keys nudge, Home resets
   resizer.addEventListener('keydown',e=>{
-    const cur=parseInt(sidebar.style.width,10)||240;
+    const cur=parseInt(sidebar.style.width,10)||DEFAULT;
     if(e.key==='ArrowLeft') applyWidth(cur-12);
     else if(e.key==='ArrowRight') applyWidth(cur+12);
-    else if(e.key==='Home') applyWidth(240);
+    else if(e.key==='Home') applyWidth(DEFAULT);
     else return;
     localStorage.setItem(KEY, parseInt(sidebar.style.width,10));
     e.preventDefault();
   });
   // Double-click resets to default
   resizer.addEventListener('dblclick',()=>{
-    applyWidth(240);
-    localStorage.setItem(KEY,'240');
+    applyWidth(DEFAULT);
+    localStorage.setItem(KEY,String(DEFAULT));
   });
 })();
 
