@@ -215,10 +215,10 @@ select:focus{border-color:#EF9F27}
     <div id="info-body"></div>
   </div>
   <div id="periph-dock">
-    <div class="periph-item" data-periph="printer"><div class="pi">🖨</div><div class="pt">Printer</div></div>
-    <div class="periph-item" data-periph="monitor"><div class="pi">🖥</div><div class="pt">Monitor</div></div>
-    <div class="periph-item" data-periph="usbdrive"><div class="pi">💾</div><div class="pt">USB Drive</div></div>
-    <div class="periph-item" data-periph="extssd"><div class="pi">📀</div><div class="pt">Ext SSD/HDD</div></div>
+    <div class="periph-item" data-periph="printer"><div class="pi">🖨️</div><div class="pt">Printer</div></div>
+    <div class="periph-item" data-periph="monitor"><div class="pi">🖥️</div><div class="pt">Monitor</div></div>
+    <div class="periph-item" data-periph="usbdrive"><div class="pi">🔌</div><div class="pt">USB Drive</div></div>
+    <div class="periph-item" data-periph="extssd"><div class="pi">🗄️</div><div class="pt">Ext SSD/HDD</div></div>
   </div>
   <div id="bottom-bar">
     <div id="breadcrumb"></div>
@@ -235,8 +235,8 @@ select:focus{border-color:#EF9F27}
     <button class="zbtn pan-btn" id="pan-down" title="Pan Down (↓)">↓</button>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/three@0.137.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.137.0/build/three.min.js" integrity="sha384-WgG62qhSmnkOoW866eO1eLJd4HfFyZ2f8XnAK/VJR9mv/JffD14EgnvgpNEw3MmF" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/controls/OrbitControls.js" integrity="sha384-agDUL1zphbxZzcozmoJHZxjXk9CemsDjK/8FSI+6CJm3C9NoU8vJic8jiGz7qW8y" crossorigin="anonymous"></script>
 <script>
 // ================================================================
 //  SECTION 1 — DEVICE DATABASE
@@ -4265,7 +4265,10 @@ function animate(){
   }
   const dev=DEVICE_DB[S.device], dm=devDims(dev);
   const isDesktopExplode = dev.formFactor==='desktop';
-  const baseYs=[0,dm.h+0.02,dm.h*2+0.04,dm.h*3+0.12,dm.h*3+0.24,dm.h*4+0.32,dm.h*5+0.44,dm.h*6+0.56];
+  // At gap=0 all layers collapse to y=0 so the device looks like one closed unit on the table.
+  // Padding scales with gap so layers separate cleanly during explosion.
+  const g = S.explosionGap;
+  const baseYs=[0, (dm.h+0.02)*g, (dm.h*2+0.04)*g, (dm.h*3+0.12)*g, (dm.h*3+0.24)*g, (dm.h*4+0.32)*g, (dm.h*5+0.44)*g, (dm.h*6+0.56)*g];
   layerGroups.forEach((grp,i)=>{
     if(!grp)return;
     if(isDesktopExplode){
