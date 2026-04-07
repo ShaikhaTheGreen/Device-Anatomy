@@ -2997,7 +2997,10 @@ const irqPulses=[];
 function buildPeripherals(){
   const dev=DEVICE_DB[S.device];
   const dm=devDims(dev);
-  const W=dm.w, D=dm.d;
+  // Peripherals are sized to real-world dimensions, NOT relative to the device.
+  // A printer doesn't shrink because you put an iPhone next to it.
+  // Reference: a 14" laptop ≈ 310mm wide → ~6.2 scene units.
+  const W=6.2, D=4.4;
   // Clean up old peripherals
   Object.values(periphModels).forEach(m=>{if(m&&m.parent)m.parent.remove(m);});
 
@@ -3051,11 +3054,15 @@ buildPeripherals();
 // Peripheral positions scale with device
 function getPeriphPos(){
   const dm=devDims(DEVICE_DB[S.device]);
+  // Position peripherals around the device using max(device, reference) so small
+  // devices like phones don't end up with peripherals overlapping them.
+  const halfW=Math.max(dm.w/2, 1.5);
+  const halfD=Math.max(dm.d/2, 1.5);
   return {
-    printer:[-dm.w*0.9,0.2,dm.d*0.3],
-    monitor:[0,0,-dm.d*1.6],           // far behind laptop, clear of display lid
-    usbdrive:[-dm.w/2-0.15,dm.h*2+0.04,-dm.d*0.25],  // near left-side USB-C port
-    extssd:[dm.w/2+1.4,0.05,dm.d*0.15]               // sitting on the table to the right of the laptop
+    printer:[-halfW-3.5, 0.6, halfD*0.4],
+    monitor:[0, 0, -halfD-4],
+    usbdrive:[-halfW-0.6, dm.h*2+0.04, -halfD*0.5],
+    extssd:[halfW+1.4, 0.05, halfD*0.3]
   };
 }
 const PERIPH_POS=getPeriphPos();
