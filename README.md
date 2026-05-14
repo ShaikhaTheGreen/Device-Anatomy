@@ -4,7 +4,7 @@
 
 An interactive 3D explorer for the inner workings of modern computing devices — laptops, desktops, tablets, and phones — built as a single-file web app using [Three.js](https://threejs.org/).
 
-Designed and used in **ISC230 — IT Infrastructure** at the College of Life Sciences, Department of Information Sciences, Kuwait University. The tool is explicitly aligned with Andrew S. Tanenbaum & Todd Austin, *Structured Computer Organization*, **6th edition** (Pearson). Every component tooltip cites the exact chapter and figure in that book so students can open the explorer alongside the textbook.
+Designed and used in **ISC230 — IT Infrastructure** at the College of Life Sciences, Department of Information Science, Kuwait University. The tool is explicitly aligned with Andrew S. Tanenbaum & Todd Austin, *Structured Computer Organization*, **6th edition** (Pearson). Every component tooltip cites the exact chapter and figure in that book so students can open the explorer alongside the textbook.
 
 ## What it does
 
@@ -110,6 +110,8 @@ MIT — see [LICENSE](LICENSE).
 
 ## Author
 
-**Dr. Shaikhah Alkhadhr**
-Faculty, College of Life Sciences — Department of Information Sciences
-Kuwait University
+**Dr. Shaikhah Alkhadhr** — Assistant Professor, Department of Information Science, College of Life Sciences, Kuwait University. Ph.D. in Computer Science and Engineering, Penn State (2023).
+
+- Personal site: <https://shaikhathegreen.github.io>
+- KU faculty page: <https://www.ku.edu.kw/user/2227>
+- ORCID: [0000-0001-5938-2953](https://orcid.org/0000-0001-5938-2953)
